@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express'
 import { db} from './config/DB.config'
-import userRoutes from './routes/user.route'
+import routes from './routes/index.route'
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ const version = process.env.API_VERSION;
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-app.use(`/api/${version}`,userRoutes());
+app.use(`/api/${version}`,routes());
 
 db.then(() =>
 app.listen(port, () => console.log(`Server started at ${host}:${port}/api/${version}/`))
