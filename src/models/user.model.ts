@@ -4,15 +4,16 @@ import { IUser } from '../interfaces/user.interface';
 
 const userSchema = new Schema(
   {
-    Firstname: {
+    firstName: {
       type: String, require:true
     },
-    Lastname:{
+    lastName:{
       type:String,require:true
-    },Email:{
+    },
+    email:{
       type:String,require:true,unique:true
     },
-    Password:{
+    password:{
       type:String,require:true
     }
   },

@@ -5,10 +5,11 @@ import HttpStatus from 'http-status-codes'
 
 export const newUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    await newUserReg(req.body);
+    const newUser = await newUserReg(req.body);
     res.status(HttpStatus.CREATED).json({
       code: HttpStatus.CREATED,
-      message: `${req.body.Firstname} ${req.body.Lastname} registered successfully!`,
+      data: newUser, 
+      message: `${newUser.firstName} ${newUser.lastName} registered successfully!`,
     });
   } catch (error) {
     res.status(HttpStatus.BAD_REQUEST).json({
@@ -20,11 +21,11 @@ export const newUser = async (req: Request, res: Response): Promise<void> => {
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const token = await userLogin(req.body);
+    const user = await userLogin(req.body);
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
-      message: `${token[1]} ${token[2]} login Successful!`,
-      token:token[0],
+      message: `${user.firstName} ${user.lastName} login Successful!`,
+      token:user.token,
     });
   } catch (error) {
     res.status(HttpStatus.BAD_REQUEST).json({

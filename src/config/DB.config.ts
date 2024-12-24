@@ -4,7 +4,6 @@ import mongoose from 'mongoose'
 dotenv.config()
 
 const connectionString: string | undefined = process.env.DATABASE;
-console.log(connectionString)
 
 if (!connectionString) {
     console.error("Error: DATABASE is not defined in the environment variables.");
