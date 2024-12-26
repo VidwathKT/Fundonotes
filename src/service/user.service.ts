@@ -2,7 +2,9 @@ import User from '../models/user.model';
 import { IUser } from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv'
 
+dotenv.config();
 
 export const newUserReg = async (body: IUser): Promise<IUser> => {
   const existingUser = await User.findOne({ email: body.email }).exec();
@@ -26,16 +28,24 @@ export const userLogin = async (body: { email: string; password: string }): Prom
   const passwordMatch = await bcrypt.compare(body.password, data[0].password);
   if (!passwordMatch) throw new Error('Invalid Password');
 
-  const token = jwt.sign(
-    { id: data[0]._id, email: data[0].email },
-    process.env.JWT_SECRET as string,
-    { expiresIn: '1h' } // Token expires in 1 hour
-  );
+  // const token = jwt.sign(
+  //   { id: data[0]._id, email: data[0].email },
+  //   process.env.JWT_SECRET as string,
+  //   { expiresIn: '1h' } // Token expires in 1 hour
+  // );
+  const payload = { userId: data[0]._id, email: data[0].email };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+
+    await User.findOneAndUpdate({ _id: data[0]._id }, { refreshToken });
 
   return {
     token,
+    refreshToken,
     firstName: data[0].firstName,
     lastName: data[0].lastName,
   };
+
 };
 

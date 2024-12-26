@@ -15,7 +15,12 @@ const userSchema = new Schema(
     },
     password:{
       type:String,require:true
-    }
+    },
+    refreshToken: {
+      type: String,
+      default: null,
+      required: false, 
+    },
   },
   {
     timestamps: true
