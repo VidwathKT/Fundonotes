@@ -1,4 +1,4 @@
-import { Schema, model,Types} from 'mongoose';
+import { Schema, model} from 'mongoose';
 import { Inote } from '../interfaces/note.interface';
 
 
@@ -12,7 +12,7 @@ const noteSchema = new Schema<Inote>(
     createdBy: { type: Schema.Types.ObjectId, ref: 'User',optional:true },
   },
   {
-    timestamps: true,        
+    timestamps: true,
   }
 );
 

@@ -1,5 +1,5 @@
 import Note from '../models/note.model';
-import { Inote } from '../interfaces/note.interface'; 
+import { Inote } from '../interfaces/note.interface';
 import { Types } from 'mongoose';
 
 export const createNote = async (noteData: any): Promise<Inote> => {
@@ -24,8 +24,7 @@ export const getNote = async (noteId: string): Promise<Inote | null> => {
     $and: [
       { _id: new Types.ObjectId(noteId) },
       { isTrash: false },
-      { isArchive: false },
-    ],
+      { isArchive: false },],
   });
   return note;
 };

@@ -8,7 +8,7 @@ export const newUser = async (req: Request, res: Response): Promise<void> => {
     const newUser = await newUserReg(req.body);
     res.status(HttpStatus.CREATED).json({
       code: HttpStatus.CREATED,
-      data: newUser, 
+      data: newUser,
       message: `${newUser.firstName} ${newUser.lastName} registered successfully!`,
     });
   } catch (error) {

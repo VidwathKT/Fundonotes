@@ -1,58 +1,53 @@
-import globals from "globals";
-import js from "@eslint/js";
-import ts from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import react from "eslint-plugin-react";
+import globals from 'globals';
+import pluginJs from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import prettier from 'eslint-config-prettier';
 
-const config = [
+/** @type {import('eslint').Linter.FlatConfig[]} */
+export default [
   {
-    files: ["**/*.{js,mjs,cjs}"],
-    languageOptions: {
-      globals: globals.browser,
-    },
-    ...js.configs.recommended,
-    rules: {
-      ...js.configs.recommended.rules,
-      "no-console": ["warn", { allow: ["warn", "error"] }], // Warn for console logs, but allow console.warn and console.error
-      "no-unused-vars": ["error", { args: "none", varsIgnorePattern: "^_" }], // Error on unused variables,ignor _
-      "no-multiple-empty-lines": ["error", { max: 1 }], //avoids many empty lines
-      "semi": ["error", "always"], // Enforce ;
-      "no-trailing-spaces": "error", //trailing whitespace error
-    },
-  },
-  {
-    files: ["**/*.{ts,tsx}"],
+    files: ['**/*.{js,mjs,cjs,ts}'],
     languageOptions: {
       parser: tsParser,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
     plugins: {
-      "@typescript-eslint": ts,
+      '@typescript-eslint': tseslint,
     },
     rules: {
-      ...ts.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": ["error", { args: "none", varsIgnorePattern: "^_" }],
-      "@typescript-eslint/semi": ["error", "always"],
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-      "no-multiple-empty-lines": ["error", { max: 1 }],
-      "no-trailing-spaces": "error",
+      ...pluginJs.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      ...prettier.rules, // Prettier integration
+      'no-console': 0,
+      'no-unused-vars': 'error',
+      quotes: [
+        'error',
+        'single',
+        {
+          allowTemplateLiterals: true,
+        },
+      ],
+      'semi-style': ['error', 'last'],
+      'max-len': [
+        'error',
+        {
+          code: 200,
+        },
+      ],
+      'no-irregular-whitespace': 'error',
+      'no-trailing-spaces': 'error',
+      'no-multi-spaces': 'error',
+      eqeqeq: ['error', 'always'],
     },
   },
   {
-    files: ["**/*.{jsx,tsx}"],
-    plugins: {
-      react,
-    },
-    rules: {
-      ...react.configs.recommended.rules,
-      "react/jsx-uses-vars": "error",
-      "react/jsx-uses-react": "error",
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-      "no-multiple-empty-lines": ["error", { max: 1 }],
-      "no-trailing-spaces": "error",
-      "semi": ["error", "always"],
+    files: ['**/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
     },
   },
 ];
-
-export default config;

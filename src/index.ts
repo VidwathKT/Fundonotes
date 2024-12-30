@@ -15,7 +15,7 @@ const version = process.env.API_VERSION;
 const logger = createLogger();
 const morgonLogStream = {
     write: (message: string): void => {
-      logger.info(message.trim()); 
+      logger.info(message.trim());
     },
   };
 

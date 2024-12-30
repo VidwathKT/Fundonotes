@@ -8,14 +8,12 @@
     "start": "nodemon ./src/index.ts",
     "dev": "nodemon ./src/index.ts",
     "build": "tsc --project tsconfig.json",
-    "lint":"eslint . --ext .ts"
+    "lint": "eslint . --ext .ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.18.2",
-    "@typescript-eslint/parser": "^8.18.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "http-status-code": "^2.1.0",
@@ -35,7 +33,10 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.2",
     "@types/winston": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
     "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.37.3",
     "express": "^4.21.2",
     "globals": "^15.14.0",

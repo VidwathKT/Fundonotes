@@ -6,10 +6,10 @@ dotenv.config()
 const connectionString: string | undefined = process.env.DATABASE;
 
 if (!connectionString) {
-    console.error("Error: DATABASE is not defined in the environment variables.");
+    console.error('Error: DATABASE is not defined in the environment variables.');
     process.exit(1);
   }
-  
+
 const options = {
     autoIndex: true, // Don't build indexes
     maxPoolSize: 10, // Maintain up to 10 socket connections
@@ -24,7 +24,7 @@ export const db = mongoose.connect(connectionString, options)
     if(res){
         console.log(`Database connection succeffully`)
     }
-    
+
 }).catch(err => {
     console.log(err)
 })

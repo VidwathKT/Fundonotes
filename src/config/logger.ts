@@ -57,7 +57,7 @@ const createMorganLogger = () => {
 };
 
 
-const logStream = (message: any): void => {
+const logStream = (message:any): void => {
   const morganLogger = createMorganLogger();
   morganLogger.info(message.toString());
 };

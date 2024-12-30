@@ -8,7 +8,7 @@ export const validateNewNote = (req: Request, res: Response, next: NextFunction)
   // Basic validations
   if (title && typeof title !== 'string') {
     res.status(HttpStatus.BAD_REQUEST).json({ message: 'Title must be a string' });
-    return; 
+    return;
   }
   if (description && typeof description !== 'string') {
     res.status(HttpStatus.BAD_REQUEST).json({ message: 'Description must be a string' });
@@ -19,7 +19,7 @@ export const validateNewNote = (req: Request, res: Response, next: NextFunction)
     return;
   }
 
-  
+
   if (!color) {
     req.body.color = '#FFFFFF';//default color
   }

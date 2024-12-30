@@ -22,6 +22,7 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
 
 export const getAllNotes = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log(req.body.createdBy)
     const notes = await noteService.getAllNotes(req.body.createdBy);
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
