@@ -2,6 +2,7 @@
 import HttpStatus from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { Console } from 'console';
 
 export const userAuth = (secret: string) => {
   return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -17,8 +18,9 @@ export const userAuth = (secret: string) => {
              message: 'Authorization token is required',
             });
       }
-      const user: any = await jwt.verify(bearerToken, secret);
-      req.body.createdBy = user.id;
+      
+      const user: any = jwt.verify(bearerToken, secret) as {_id: string};
+      req.body.createdBy = user.userId;
       req.body.email = user.email;
       next();
     } catch (error) {

@@ -2,7 +2,7 @@ import Note from '../models/note.model';
 import { Inote } from '../interfaces/note.interface';
 import { Types } from 'mongoose';
 
-export const createNote = async (noteData: any): Promise<Inote> => {
+export const createNote = async (noteData: Inote): Promise<Inote> => {
   const color = noteData.color || 'white';
   const newNote = await Note.create({ ...noteData, color });
   newNote.createdBy = noteData.createdBy;
@@ -52,7 +52,7 @@ export const updateNote = async (noteId: string, noteData: Partial<Inote>): Prom
 export const permanentlyDeleteNote = async (noteId: string): Promise<void> => {
   const result = await Note.deleteOne({
     _id: new Types.ObjectId(noteId),
-    isTrash: true,
+    isTrash: false,
   });
 
   if (result.deletedCount === 0) {
