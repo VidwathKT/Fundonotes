@@ -25,10 +25,11 @@ const noteRoutes = (): Router => {
   router.delete('/:noteId',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
   NoteController.permanentlyDeleteNote);
 
-  router.put(
-    '/:noteId/trash',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
+  router.put('/:noteId/trash',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
     NoteController.trashNote);
 
+  router.put('/:noteId/archive',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
+      NoteController.archiveNote);
 
   return router;
 };
