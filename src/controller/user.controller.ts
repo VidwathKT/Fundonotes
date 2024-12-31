@@ -26,6 +26,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       code: HttpStatus.OK,
       message: `${user.firstName} ${user.lastName} login Successful!`,
       token:user.token,
+      refreshToken:user.refreshToken,
     });
   } catch (error) {
     res.status(HttpStatus.BAD_REQUEST).json({
