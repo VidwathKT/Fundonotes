@@ -73,4 +73,19 @@ export const trashNote = async (noteId: string): Promise<Inote | null> => {
   return note;
 };
 
+export const archiveNote = async (noteId: string): Promise<Inote | null> => {
+  if (!noteId) {
+    throw new Error('Note ID is required');
+  }
+  const note = await Note.findOne({
+    $and: [{ _id: noteId }, { isTrash: false }],
+  });
 
+  if (!note) {
+    throw new Error('Note not found');
+  }
+
+  note.isArchive = !note.isArchive;
+  await note.save();
+  return note;
+};
