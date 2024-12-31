@@ -106,4 +106,29 @@ export const trashNote = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+export const archiveNote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const archive = await noteService.archiveNote(req.params.noteId);
+    if (!archive) {
+        res.status(HttpStatus.NOT_FOUND).json({
+          code: HttpStatus.NOT_FOUND,
+          message: 'Note not found in archive',
+        });
+        return;
+      }
 
+    const message = archive.isArchive
+      ? 'Note moved to the Archive successfully'
+      : 'Note unarchived successfully';
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data: archive,
+      message: message,
+    });
+  } catch (error) {
+    res.status(HttpStatus.BAD_REQUEST).json({
+      code: HttpStatus.BAD_REQUEST,
+      message: `${error}`,
+    });
+  }
+};
