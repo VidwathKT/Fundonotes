@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import HttpStatus from 'http-status-codes';
-
+import { Types } from 'mongoose';
 
 export const validateNewNote = (req: Request, res: Response, next: NextFunction): void => {
   const { title, description, color } = req.body;
@@ -22,6 +22,16 @@ export const validateNewNote = (req: Request, res: Response, next: NextFunction)
 
   if (!color) {
     req.body.color = '#FFFFFF';//default color
+  }
+
+  next();
+};
+export const validateNoteId = (req: Request, res: Response, next: NextFunction): void => {
+  const { noteId } = req.params;
+
+  if (!Types.ObjectId.isValid(noteId)) {
+    res.status(400).json({ message: 'Invalid noteId' });
+    return ;
   }
 
   next();
