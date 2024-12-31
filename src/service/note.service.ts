@@ -52,10 +52,25 @@ export const updateNote = async (noteId: string, noteData: Partial<Inote>): Prom
 export const permanentlyDeleteNote = async (noteId: string): Promise<void> => {
   const result = await Note.deleteOne({
     _id: new Types.ObjectId(noteId),
-    isTrash: false,
+    isTrash: true,
   });
 
   if (result.deletedCount === 0) {
     throw new Error('Note not found or not in trash');
   }
 };
+
+export const trashNote = async (noteId: string): Promise<Inote | null> => {
+  if (!noteId) {
+    throw new Error('Note ID is required');
+  }
+  const note = await Note.findOne({ _id: noteId });
+  if (!note) {
+    throw new Error('Note not found');
+  }
+  note.isTrash = !note.isTrash;
+  await note.save();
+  return note;
+};
+
+

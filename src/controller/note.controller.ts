@@ -81,3 +81,29 @@ export const permanentlyDeleteNote = async (req: Request, res: Response): Promis
     });
   }
 };
+export const trashNote = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const trash = await noteService.trashNote(req.params.noteId);
+    if (!trash) {
+        res.status(HttpStatus.NOT_FOUND).json({
+          code: HttpStatus.NOT_FOUND,
+          message: 'Note not found in trash',
+        });
+        return;
+      }
+    const message = trash.isTrash
+      ? 'Note moved to the Trash successfully'
+      : 'Note restored from the Trash successfully';
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      message: message,
+    });
+  } catch (error) {
+    res.status(HttpStatus.BAD_REQUEST).json({
+      code: HttpStatus.BAD_REQUEST,
+      message: `${error}`,
+    });
+  }
+};
+
+
