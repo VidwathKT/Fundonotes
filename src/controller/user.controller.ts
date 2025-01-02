@@ -35,3 +35,18 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     });
   }
 };
+
+export const forgetPassword = async(req: Request, res: Response): Promise<void> => {
+  try {
+    await forgetPassword(req.body);
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      message: `Token sent to Email Successfully`,
+    });
+  } catch (error) {
+    res.status(HttpStatus.BAD_REQUEST).json({
+      code: HttpStatus.BAD_REQUEST,
+      message: `${error}`,
+    });
+  }
+};

@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import {newUser,loginUser} from '../controller/user.controller';
+import {newUser,loginUser,forgetPassword} from '../controller/user.controller';
 import {validateNewUser,validateLoginUser,validateForgetPassword} from '../validators/user.validator';
 import dotenv from 'dotenv';
 
