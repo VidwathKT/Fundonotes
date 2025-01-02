@@ -45,3 +45,23 @@ export const validateLoginUser = (req: Request, res: Response, next: NextFunctio
   next();
 };
 
+export const validateForgetPassword = (req: Request, res: Response, next: NextFunction): void => {
+  const { Email } = req.body;
+
+  if (!Email || !/^\S+@\S+\.\S+$/.test(Email)) {
+    return next(new Error('A valid email is required.'));
+  }
+
+  next();
+};
+
+export const validateResetPassword = (req: Request, res: Response, next: NextFunction): void => {
+  const { Password } = req.body;
+
+  if (!Password || Password.length < 8) {
+    return next(new Error('Password is required and must be at least 8 characters.'));
+  }
+
+  next();
+};
+
