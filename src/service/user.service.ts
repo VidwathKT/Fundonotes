@@ -45,21 +45,21 @@ export const userLogin = async (body: { email: string; password: string }): Prom
 
 };
 
-export const forgetPasswordService = async (body: { Email: string }): Promise<string> => {
-  if (!body.Email) {
+export const forgetPasswordService = async (body: { email: string }): Promise<string> => {
+  if (!body.email) {
     throw new Error('Email is required');
   }
 
-  const data = await User.find({ Email: body.Email });
+  const data = await User.find({ email: body.email });
   if (data.length === 0) throw new Error('No user exists');
 
-  const token = jwt.sign({ Email: body.Email },process.env.JWT_FORGETSECRET as string,{ expiresIn: '10m' });
+  const token = jwt.sign({ email: body.email },process.env.JWT_FORGETSECRET as string,{ expiresIn: '10m' });
 
   const subject = 'Password Reset Token';
   const message = `Your password reset token is: ${token}`;
 
   await sendEmail({
-    recipients: body.Email, // Send to the user's email
+    recipients: body.email, // Send to the user's email
     subject: subject,
     message: message,
   });

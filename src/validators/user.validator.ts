@@ -46,9 +46,8 @@ export const validateLoginUser = (req: Request, res: Response, next: NextFunctio
 };
 
 export const validateForgetPassword = (req: Request, res: Response, next: NextFunction): void => {
-  const { Email } = req.body;
-
-  if (!Email || !/^\S+@\S+\.\S+$/.test(Email)) {
+  const { email } = req.body;
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
     return next(new Error('A valid email is required.'));
   }
 
