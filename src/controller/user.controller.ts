@@ -1,4 +1,4 @@
-import {newUserReg,userLogin} from '../service/user.service';
+import {newUserReg,userLogin,forgetPasswordService} from '../service/user.service';
 import { Request, Response } from 'express';
 import HttpStatus from 'http-status-codes'
 
@@ -38,7 +38,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
 export const forgetPassword = async(req: Request, res: Response): Promise<void> => {
   try {
-    await forgetPassword(req.body);
+    await forgetPasswordService(req.body);
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       message: `Token sent to Email Successfully`,
