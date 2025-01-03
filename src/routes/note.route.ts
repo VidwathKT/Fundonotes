@@ -13,8 +13,7 @@ const noteRoutes = (): Router => {
   router.post('/',NoteValidator.validateNewNote,userAuth(process.env.JWT_SECRET!),
   NoteController.createNote);
 
-  router.get('/',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
-  NoteController.getAllNotes);
+  router.get('/',userAuth(process.env.JWT_SECRET!),NoteController.getAllNotes);
 
   router.get('/:noteId',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
   NoteController.getNote);

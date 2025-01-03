@@ -1,9 +1,10 @@
 import User from '../models/user.model';
 import { IUser,LoginResponse } from '../interfaces/user.interface';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'
 import { sendEmail } from '../utilities/nodeMailer';
+import {createJwtToken} from '../utilities/jwtToken';
+import jwt from 'jsonwebtoken'
 
 dotenv.config();
 
@@ -31,8 +32,8 @@ export const userLogin = async (body: { email: string; password: string }): Prom
 
   const payload = { userId: data[0]._id, email: data[0].email };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '1h' });
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET_REFRESH as string, { expiresIn: '7d' });
+    const token = createJwtToken(payload,process.env.JWT_SECRET as string ,'1h');
+    const refreshToken = createJwtToken(payload,process.env.JWT_SECRET_REFRESH as string ,'7d');
 
     await User.findOneAndUpdate({ _id: data[0]._id }, { refreshToken });
 
@@ -53,7 +54,7 @@ export const forgetPasswordService = async (body: { email: string }): Promise<st
   const data = await User.find({ email: body.email });
   if (data.length === 0) throw new Error('No user exists');
 
-  const token = jwt.sign({ email: body.email },process.env.JWT_FORGETSECRET as string,{ expiresIn: '10m' });
+  const token = createJwtToken({ email: body.email },process.env.JWT_FORGETSECRET as string,'10m');
 
   const subject = 'Password Reset Token';
   const message = `Your password reset token is: ${token}`;
@@ -67,6 +68,7 @@ export const forgetPasswordService = async (body: { email: string }): Promise<st
   return token;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const resetPasswordService = async (body: { email: string; password: string }): Promise<any> => {
   const hashedPassword = await bcrypt.hash(body.password, 10);
   const updatedUser = await User.updateOne({ email: body.email }, { password: hashedPassword });
@@ -78,4 +80,24 @@ export const resetPasswordService = async (body: { email: string; password: stri
   return updatedUser;
 };
 
-
+export const refreshTokenService = async (body:{createdBy:string; email:string}):Promise<string>=>{
+  try{
+      const user = await User.findById(body.createdBy);
+      const refreshToken = user?.refreshToken;
+      if(!refreshToken){
+        throw new Error('Refresh token not found in database');
+      }
+      const secret = process.env.JWT_SECRET_REFRESH
+      if (!secret) {
+        throw new Error('JWT_SECRET_REFRESH is not defined in .env file');
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload:any = jwt.verify(refreshToken, secret);
+      const { userId,email }=payload;
+      const newAccessToken = createJwtToken({userId,email},process.env.JWT_SECRET as string,'1h');
+      return newAccessToken ;
+    }
+  catch(error){
+    throw new Error(`Error ${error}`)
+  }
+};
