@@ -67,3 +67,15 @@ export const forgetPasswordService = async (body: { email: string }): Promise<st
   return token;
 };
 
+export const resetPasswordService = async (body: { email: string; password: string }): Promise<any> => {
+  const hashedPassword = await bcrypt.hash(body.password, 10);
+  const updatedUser = await User.updateOne({ email: body.email }, { password: hashedPassword });
+
+  if (!updatedUser.matchedCount) {
+    throw new Error('User not found or password update failed');
+  }
+
+  return updatedUser;
+};
+
+

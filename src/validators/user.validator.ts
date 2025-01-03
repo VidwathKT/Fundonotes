@@ -55,9 +55,9 @@ export const validateForgetPassword = (req: Request, res: Response, next: NextFu
 };
 
 export const validateResetPassword = (req: Request, res: Response, next: NextFunction): void => {
-  const { Password } = req.body;
+  const { password } = req.body;
 
-  if (!Password || Password.length < 8) {
+  if (!password || password.length < 8) {
     return next(new Error('Password is required and must be at least 8 characters.'));
   }
 

@@ -18,7 +18,8 @@ const userRoutes = (): Router => {
 
   router.post('/forgetPassword',validateForgetPassword,forgetPassword);
   
-  router.post('/resetPassword',validateResetPassword,userAuth(process.env.JWT_FORGETSECRET!),resetPassword);
+  router.put('/resetPassword',validateResetPassword,userAuth(process.env.JWT_FORGETSECRET!)
+  ,resetPassword);
   
   return router;
 };

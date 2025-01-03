@@ -1,4 +1,4 @@
-import {newUserReg,userLogin,forgetPasswordService} from '../service/user.service';
+import {newUserReg,userLogin,forgetPasswordService,resetPasswordService} from '../service/user.service';
 import { Request, Response } from 'express';
 import HttpStatus from 'http-status-codes'
 
@@ -42,6 +42,21 @@ export const forgetPassword = async(req: Request, res: Response): Promise<void> 
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       message: `Token sent to Email Successfully`,
+    });
+  } catch (error) {
+    res.status(HttpStatus.BAD_REQUEST).json({
+      code: HttpStatus.BAD_REQUEST,
+      message: `${error}`,
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+  try {
+    await resetPasswordService(req.body);
+    res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      message: 'Password reset Successfully',
     });
   } catch (error) {
     res.status(HttpStatus.BAD_REQUEST).json({
