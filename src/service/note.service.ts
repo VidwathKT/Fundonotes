@@ -10,12 +10,17 @@ export const createNote = async (noteData: Inote): Promise<Inote> => {
   return newNote;
 };
 
-export const getAllNotes = async (userId: string): Promise<Inote[]> => {
-  const notes = await Note.find({ createdBy: new Types.ObjectId(userId) });
+export const getAllNotes = async (userId: string,skip: number,limit :number): Promise<{notes: Inote[], totalRecords: number}> => {
+  const notes = await Note.find({ createdBy: new Types.ObjectId(userId) })
+  .skip(skip).limit(limit);
+
   if (!notes || notes.length === 0) {
     throw new Error('Notes not found');
   }
-  return notes;
+
+  const totalRecords = await Note.countDocuments({createdBy:userId});
+
+  return { notes,totalRecords };
 };
 
 

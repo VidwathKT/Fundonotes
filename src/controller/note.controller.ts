@@ -22,10 +22,29 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
 
 export const getAllNotes = async (req: Request, res: Response): Promise<void> => {
   try {
-    const notes = await noteService.getAllNotes(req.body.createdBy);
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+
+    if(page <= 0 || limit <= 0){
+      res.status(HttpStatus.BAD_REQUEST).json({
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Page and limit must be positive integer',
+      });
+    }
+
+    const skip = (page-1) * limit;
+
+    const {notes, totalRecords} = await noteService.getAllNotes(req.body.createdBy,skip,limit);
+
+    const totalPages = Math.ceil(totalRecords / limit);
+
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       data: notes,
+      meta:{
+        page,limit,totalRecords,totalPages },
+      message : 'Successfully fetched allNotes of this page'
     });
   } catch (error) {
     console.log(error);
