@@ -4,6 +4,8 @@ import { db} from './config/DB.config'
 import routes from './routes/index.route'
 import {createLogger} from './config/logger';
 import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger/swagger.json';
 
 dotenv.config();
 
@@ -26,5 +28,6 @@ app.use(morgan('combined', { stream: morgonLogStream }));
 app.use(`/api/${version}`,routes());
 
 db.then(() =>
-app.listen(port, () => console.log(`Server started at ${host}:${port}/api/${version}/`))
-);
+app.listen(port, () => console.log(`Server started at ${host}:${port}/api/${version}/`)));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
