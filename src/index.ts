@@ -32,3 +32,4 @@ app.use(`/api/${version}`,routes());
 db.then(() =>
 app.listen(port, () => console.log(`Server started at ${host}:${port}/api/${version}/`)));
 
+export { app };
