@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import { sendEmail } from '../utilities/nodeMailer';
 import {createJwtToken} from '../utilities/jwtToken';
 import jwt from 'jsonwebtoken'
+import {connectRabbitMQ} from '../utilities/rabbitMQ'
 
 dotenv.config();
 
@@ -18,6 +19,8 @@ export const newUserReg = async (body: IUser): Promise<IUser> => {
   body.password = hashedPassword;
 
   const data = await User.create(body);
+  const { sendToExchange } = await connectRabbitMQ();
+  await sendToExchange('userExchange', 'userRoutingKey', data);
   console.log(data);
   return data;
 };
