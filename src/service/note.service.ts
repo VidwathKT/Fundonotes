@@ -1,12 +1,14 @@
 import Note from '../models/note.model';
 import { Inote } from '../interfaces/note.interface';
-import { Types } from 'mongoose';
+import { SortOrder, Types } from 'mongoose';
+import redisClient from '../config/redis'
 
 export const createNote = async (noteData: Inote): Promise<Inote> => {
   const color = noteData.color || 'white';
   const newNote = await Note.create({ ...noteData, color });
   newNote.createdBy = noteData.createdBy;
   await newNote.save();
+  await redisClient.del(`notes:${noteData.createdBy}`)
   return newNote;
 };
 
@@ -19,42 +21,38 @@ export const getAllNotes = async (userId: string,skip: number,limit :number): Pr
   }
 
   const totalRecords = await Note.countDocuments({createdBy:userId});
+  await redisClient.setEx(`notes:${userId}`, 3600, JSON.stringify(notes));
 
   return { notes,totalRecords };
 };
 
-
-export const getNote = async (noteId: string): Promise<Inote | null> => {
+export const getNote = async (noteId: string,userId:string): Promise<Inote | null> => {
   const note = await Note.findOne({
     $and: [
       { _id: new Types.ObjectId(noteId) },
       { isTrash: false },
       { isArchive: false },],
   });
+  await redisClient.setEx(`note:${userId}:${noteId}`, 3600, JSON.stringify(note));
   return note;
 };
-
 
 export const updateNote = async (noteId: string, noteData: Partial<Inote>): Promise<Inote | null> => {
   const updatedNote = await Note.findOneAndUpdate(
     {
-      $and: [
-        { _id: new Types.ObjectId(noteId) },
-        { isTrash: false },
-        { isArchive: false },
-      ],
-    },
-    noteData,
-    { new: true }
-  );
+      $and: [{ _id: new Types.ObjectId(noteId) },{ isTrash: false },{ isArchive: false },],
+    },noteData,{ new: true });
 
   if (!updatedNote) {
     throw new Error('Note not found');
   }
+  await redisClient.del(updatedNote.createdBy.toString());
+
   return updatedNote;
 };
 
-export const permanentlyDeleteNote = async (noteId: string): Promise<void> => {
+
+export const permanentlyDeleteNote = async (noteId: string,userId:string): Promise<void> => {
   const result = await Note.deleteOne({
     _id: new Types.ObjectId(noteId),
     isTrash: true,
@@ -63,6 +61,8 @@ export const permanentlyDeleteNote = async (noteId: string): Promise<void> => {
   if (result.deletedCount === 0) {
     throw new Error('Note not found or not in trash');
   }
+  await redisClient.del(`notes:${userId}`);
+  await redisClient.del(`note:${userId}:${noteId}`);
 };
 
 export const trashNote = async (noteId: string): Promise<Inote | null> => {
@@ -75,6 +75,7 @@ export const trashNote = async (noteId: string): Promise<Inote | null> => {
   }
   note.isTrash = !note.isTrash;
   await note.save();
+  await redisClient.del(`notes:${note.createdBy.toString()}`)
   return note;
 };
 
@@ -92,5 +93,35 @@ export const archiveNote = async (noteId: string): Promise<Inote | null> => {
 
   note.isArchive = !note.isArchive;
   await note.save();
+  await redisClient.del(note.createdBy.toString());
   return note;
+};
+
+export const search = async (search: string, page: number, limit: number, sortOrder: string): Promise<{ results: Inote[] }> => {
+  try {
+      const sortQuery: { [key: string]: SortOrder } = { title: sortOrder === 'asc' ? 1 : -1 };
+
+      const searchResult: Inote [] = await Note.find({
+          $or: [
+              { title: { $regex: search, $options: 'i' } },
+              { description: { $regex: search, $options: 'i' } },
+          ],
+      })
+      .sort(sortQuery)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+      if (searchResult.length === 0) {
+          throw new Error('No results found');
+      }
+
+      return { results: searchResult };
+  }
+  catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Error performing search: ${error.message}`);
+  } else {
+      throw new Error('An unknown error occurred');
+  }
+  }
 };

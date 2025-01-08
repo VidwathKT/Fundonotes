@@ -140,10 +140,11 @@ describe('Notes Service', () => {
   test('should delete a note permanently', async () => {
     const mockNoteId = 'noteId';
     const deleteResult = { deletedCount: 1 };
+    const mockUserId = 'userId';
 
     (Note.deleteOne as jest.Mock).mockResolvedValueOnce(deleteResult);
 
-    await noteService.permanentlyDeleteNote(mockNoteId);
+    await noteService.permanentlyDeleteNote(mockNoteId,mockUserId);
     expect(Note.deleteOne).toHaveBeenCalledWith({
       _id: expect.any(Object),
       isTrash: true,

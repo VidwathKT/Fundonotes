@@ -23,8 +23,8 @@ export const createNote = async (req: Request, res: Response): Promise<void> => 
 export const getAllNotes = async (req: Request, res: Response): Promise<void> => {
   try {
 
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 5;
+    const page = Number(req.query.page as string) || 1;
+    const limit = Number(req.query.limit as string) || 5;
 
     if(page <= 0 || limit <= 0){
       res.status(HttpStatus.BAD_REQUEST).json({
@@ -57,7 +57,8 @@ export const getAllNotes = async (req: Request, res: Response): Promise<void> =>
 
 export const getNote = async (req: Request, res: Response): Promise<void> => {
   try {
-    const note = await noteService.getNote(req.params.noteId);
+    const userId = req.body.createdBy;
+    const note = await noteService.getNote(req.params.noteId,userId);
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       data: note,
@@ -88,7 +89,7 @@ export const updateNote = async (req: Request, res: Response): Promise<void> => 
 
 export const permanentlyDeleteNote = async (req: Request, res: Response): Promise<void> => {
   try {
-    await noteService.permanentlyDeleteNote(req.params.noteId);
+    await noteService.permanentlyDeleteNote(req.params.noteId,req.body.userId);
     res.status(HttpStatus.OK).json({
       code: HttpStatus.OK,
       message: 'Note deleted successfully',
@@ -150,4 +151,25 @@ export const archiveNote = async (req: Request, res: Response): Promise<void> =>
       message: `${error}`,
     });
   }
+};
+
+export const search = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const searchText: string = req.query.search as string ;
+        const page: number = Number(req.query.page) || 1;
+        const limit: number = Number(req.query.limit) || 5;
+        const sortOrder: 'asc' | 'desc' = (req.query.sortOrder as 'asc' | 'desc') || 'asc';
+
+        const searchResult = await noteService.search(searchText, page, limit, sortOrder);
+
+        res.status(HttpStatus.OK).json({
+            code: HttpStatus.OK,
+            data: searchResult,
+        });
+    } catch (error) {
+        res.status(HttpStatus.BAD_REQUEST).json({
+            code: HttpStatus.BAD_REQUEST,
+            message: `${error}`,
+        });
+    }
 };

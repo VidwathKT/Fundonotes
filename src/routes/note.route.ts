@@ -3,6 +3,7 @@ import * as NoteController from '../controller/note.controller';
 import * as NoteValidator from '../validators/note.validator';
 import { userAuth } from '../middlewares/auth.middleware';
 import dotenv from 'dotenv';
+import {cacheNotes,cacheNoteById} from '../middlewares/cache.middleware'
 
 dotenv.config();
 
@@ -13,10 +14,12 @@ const noteRoutes = (): Router => {
   router.post('/',NoteValidator.validateNewNote,userAuth(process.env.JWT_SECRET!),
   NoteController.createNote);
 
-  router.get('/',userAuth(process.env.JWT_SECRET!),NoteController.getAllNotes);
+  router.get('/',userAuth(process.env.JWT_SECRET!),cacheNotes,NoteController.getAllNotes);
+
+  router.get('/search',userAuth(process.env.JWT_SECRET!),NoteController.search);
 
   router.get('/:noteId',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
-  NoteController.getNote);
+  cacheNoteById,NoteController.getNote);
 
   router.put('/:noteId',NoteValidator.validateNoteId,userAuth(process.env.JWT_SECRET!),
   NoteController.updateNote);

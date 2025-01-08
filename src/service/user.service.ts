@@ -32,7 +32,7 @@ export const userLogin = async (body: { email: string; password: string }): Prom
 
   const payload = { userId: data[0]._id, email: data[0].email };
 
-    const token = createJwtToken(payload,process.env.JWT_SECRET as string ,'1h');
+    const token = createJwtToken(payload,process.env.JWT_SECRET as string ,'1d');
     const refreshToken = createJwtToken(payload,process.env.JWT_SECRET_REFRESH as string ,'7d');
 
     await User.findOneAndUpdate({ _id: data[0]._id }, { refreshToken });

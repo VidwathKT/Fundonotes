@@ -57,6 +57,7 @@ const createMorganLogger = () => {
 };
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const logStream = (message:any): void => {
   const morganLogger = createMorganLogger();
   morganLogger.info(message.toString());
