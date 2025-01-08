@@ -1,0 +1,16 @@
+import { Document } from 'mongoose';
+
+export interface IUser extends Document {
+  _id: string | number;
+  firstName: string;
+  lastName:string;
+  email: string;
+  password: string;
+  refreshToken?:string;
+}
+export interface LoginResponse {
+  token: string;
+  refreshToken: string;
+  firstName: string;
+  lastName: string;
+}
