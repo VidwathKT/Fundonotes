@@ -1,37 +1,59 @@
+/* eslint-disable no-unused-vars */
 import { Request, Response, NextFunction } from 'express';
 import HttpStatus from 'http-status-codes';
-import { Types } from 'mongoose';
+import { body,param, validationResult,ValidationChain } from 'express-validator';
 
-export const validateNewNote = (req: Request, res: Response, next: NextFunction): void => {
-  const { title, description, color } = req.body;
+export const validateNewNote: (ValidationChain | ((req: Request, res: Response, next: NextFunction) => void))[] = [
 
-  // Basic validations
-  if (title && typeof title !== 'string') {
-    res.status(HttpStatus.BAD_REQUEST).json({ message: 'Title must be a string' });
-    return;
-  }
-  if (description && typeof description !== 'string') {
-    res.status(HttpStatus.BAD_REQUEST).json({ message: 'Description must be a string' });
-    return;
-  }
-  if (color && typeof color !== 'string') {
-    res.status(HttpStatus.BAD_REQUEST).json({ message: 'Color must be a string' });
-    return;
-  }
+  body('title')
+    .optional()
+    .isString()
+    .withMessage('Title must be a string'),
 
+  body('description')
+    .optional()
+    .isString()
+    .withMessage('Description must be a string'),
 
-  if (!color) {
-    req.body.color = '#FFFFFF';//default color
-  }
+  body('color')
+    .optional()
+    .isString()
+    .withMessage('Color must be a string'),
 
-  next();
-};
-export const validateNoteId = (req: Request, res: Response, next: NextFunction): void => {
-  const { noteId } = req.params;
-  if (!Types.ObjectId.isValid(noteId)) {
-    res.status(400).json({ message: 'Invalid noteId' });
-    return ;
-  }
+  (req: Request, res: Response, next: NextFunction): Response | void => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        errors: errors.array(),
+        message: 'Validation failed'
+      });
+    }
 
-  next();
-};
+    if (!req.body.color) {
+      req.body.color = '#FFFFFF'; // default color
+    }
+
+    next();
+  },
+];
+export const validateNoteId: (ValidationChain | ((req: Request, res: Response, next: NextFunction) => void))[] = [
+
+  param('noteId')
+    .custom((value) => {
+      return /^[a-fA-F0-9]{24}$/.test(value);
+    })
+    .withMessage('Invalid noteId'),
+
+  (req: Request, res: Response, next: NextFunction): Response | void => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        errors: errors.array(),
+        message: 'Validation failed',
+      });
+    }
+
+    next();
+  },
+];
