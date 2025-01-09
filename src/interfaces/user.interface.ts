@@ -8,3 +8,9 @@ export interface IUser extends Document {
   password: string;
   refreshToken?:string;
 }
+export interface LoginResponse {
+  token: string;
+  refreshToken: string;
+  firstName: string;
+  lastName: string;
+}
